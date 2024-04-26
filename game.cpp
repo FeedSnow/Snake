@@ -23,10 +23,9 @@ void Game::UpdateGame()
 	head.x += dir.x;
 	head.y += dir.y;
 
-	if (*powerUp == head)
+	if (powerUp == head)
 	{
 		length++;
-		delete powerUp;
 		GeneratePowerUp();
 	}
 
@@ -46,18 +45,11 @@ void Game::UpdateGame()
 
 void Game::GeneratePowerUp()
 {
-	if (powerUp)
-		return;
+	powerUp.x = rand() % size.x;
+	powerUp.y = rand() % size.y;
 
-	powerUp = new Point();
-	powerUp->x = rand() % size.x;
-	powerUp->y = rand() % size.y;
-
-	if (IsInSnake(*powerUp))
-	{
-		delete powerUp;
+	if (IsInSnake(powerUp))
 		GeneratePowerUp();
-	}
 }
 
 bool Game::BitItself()

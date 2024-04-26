@@ -26,8 +26,7 @@ private:
 
 	Point size;
 
-	// One power up
-	Point* powerUp;
+	Point powerUp;
 
 	void GeneratePowerUp();
 	bool BitItself();
