@@ -20,24 +20,29 @@ int main()
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if(event.key.scancode == sf::Keyboard::Scancode::Up
+					|| event.key.scancode == sf::Keyboard::Scancode::W)
+					game.SetDir(DIR_UP);
+				else if (event.key.scancode == sf::Keyboard::Scancode::Right
+					|| event.key.scancode == sf::Keyboard::Scancode::D)
+					game.SetDir(DIR_RIGHT);
+				else if (event.key.scancode == sf::Keyboard::Scancode::Down
+					|| event.key.scancode == sf::Keyboard::Scancode::S)
+					game.SetDir(DIR_DOWN);
+				else if (event.key.scancode == sf::Keyboard::Scancode::Left
+					|| event.key.scancode == sf::Keyboard::Scancode::A)
+					game.SetDir(DIR_LEFT);
+			}
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)
-			|| sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-			game.SetDir(DIR_UP);
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)
-			|| sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-			game.SetDir(DIR_RIGHT);
-		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down)
-			|| sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-			game.SetDir(DIR_DOWN);
-		else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left)
-			|| sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-			game.SetDir(DIR_LEFT);
-
-		window.clear();
+		window.clear(sf::Color::White);
+		//game.DrawFrame(window);
 		game.UpdateGame();
 		game.Render(window);
 		window.display();
+
+		sf::sleep(sf::seconds(0.7 / game.GetLength()));
 	}
 }

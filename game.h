@@ -1,10 +1,15 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+#ifndef __DIRECTIONS__
+#define __DIRECTIONS__
+
 #define DIR_UP		sf::Vector2i(0, -1)
 #define DIR_RIGHT	sf::Vector2i(1, 0)
 #define DIR_DOWN	sf::Vector2i(0, 1)
 #define DIR_LEFT	sf::Vector2i(-1, 0)
+
+#endif // !__DIRECTIONS__
 
 class Game
 {
@@ -17,6 +22,8 @@ public:
 
 	sf::Vector2i GetDir();
 	void SetDir(sf::Vector2i dir);
+
+	size_t GetLength() { return length; }
 private:
 	// Array of snake cells
 	sf::Vector2i* snake;
@@ -34,4 +41,5 @@ private:
 	bool IsInSnake(sf::Vector2i p);
 	bool IsInBounds(sf::Vector2i p);
 	void ChangeAxis();
+	void DrawFrame(sf::RenderWindow&);
 };

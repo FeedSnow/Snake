@@ -2,7 +2,8 @@
 #include <cstdlib>
 #include <iostream>
 
-#define CELL_SIZE 10
+#define CELL_SIZE 15
+#define MARGIN 10
 
 using namespace std;
 
@@ -42,6 +43,7 @@ void Game::UpdateGame()
 	}
 
 	head += dir;
+	cout << "Head: (" << head.x << ",  " << head.y << ")" << endl;
 
 	if (powerUp == head)
 	{
@@ -68,14 +70,19 @@ void Game::UpdateGame()
 void Game::Render(sf::RenderWindow& window)
 {
 	// SMFL
+	DrawFrame(window);
+
 	for (size_t i = 0; i < length; i++)
 	{
 		sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-		cell.setPosition(sf::Vector2f(snake[i].x * CELL_SIZE, snake[i].y * CELL_SIZE));
+		cell.setFillColor(sf::Color::Black);
+		cell.setPosition(sf::Vector2f(snake[i].x * CELL_SIZE + 2 * MARGIN, snake[i].y * CELL_SIZE + 2 * MARGIN));
 		window.draw(cell);
 	}
 
 	sf::CircleShape apple(CELL_SIZE / 2.);
+	apple.setFillColor(sf::Color::Red);
+	apple.setPosition(sf::Vector2f(powerUp.x * CELL_SIZE + 2 * MARGIN, powerUp.y * CELL_SIZE + 2 * MARGIN));
 	window.draw(apple);
 }
 
@@ -99,6 +106,8 @@ void Game::GeneratePowerUp()
 
 	if (IsInSnake(powerUp))
 		GeneratePowerUp();
+
+	cout << "Powerup: (" << powerUp.x << ", " << powerUp.y << ")" << endl;
 }
 
 bool Game::BitItself()
@@ -130,4 +139,40 @@ void Game::ChangeAxis()
 	dir.x ^= dir.y;
 	dir.y ^= dir.x;
 	dir.x ^= dir.y;
+}
+
+void Game::DrawFrame(sf::RenderWindow& window)
+{
+	// Horizontal outer
+	sf::RectangleShape line(sf::Vector2f(size.x * CELL_SIZE + 2 * MARGIN, MARGIN / 4.));
+	line.setFillColor(sf::Color::Black);
+	line.setPosition(sf::Vector2f(MARGIN, MARGIN));
+	window.draw(line);
+
+	line.setPosition(sf::Vector2f(MARGIN, size.y * CELL_SIZE + 2.75 * MARGIN));
+	window.draw(line);
+
+	// Horizontal inner
+	line.setSize(sf::Vector2f(size.x * CELL_SIZE + 0.5 * MARGIN, MARGIN / 4.));
+	line.setPosition(sf::Vector2f(1.75 * MARGIN, 1.75 * MARGIN));
+	window.draw(line);
+
+	line.setPosition(sf::Vector2f(1.75 * MARGIN, size.y * CELL_SIZE + 2 * MARGIN));
+	window.draw(line);
+
+	// Vertical outer
+	line.setSize(sf::Vector2f(MARGIN / 4., size.y * CELL_SIZE + 2 * MARGIN));
+	line.setPosition(sf::Vector2f(MARGIN, MARGIN));
+	window.draw(line);
+
+	line.setPosition(sf::Vector2f(size.x * CELL_SIZE + 2.75 * MARGIN, MARGIN));
+	window.draw(line);
+
+	// Vertical inner
+	line.setSize(sf::Vector2f(MARGIN / 4., size.y * CELL_SIZE + 0.5 * MARGIN));
+	line.setPosition(sf::Vector2f(1.75 * MARGIN, 1.75 * MARGIN));
+	window.draw(line);
+
+	line.setPosition(sf::Vector2f(size.x * CELL_SIZE + 2 * MARGIN, 1.75 * MARGIN));
+	window.draw(line);
 }
