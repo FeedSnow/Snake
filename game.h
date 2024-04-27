@@ -1,4 +1,5 @@
 #pragma once
+#include <SFML/Graphics.hpp>
 
 struct Point
 {
@@ -18,7 +19,7 @@ public:
 	~Game();
 
 	void UpdateGame();
-	void Render();
+	void Render(sf::RenderWindow&);
 
 	Point GetDir();
 	void SetDir(Point dir);

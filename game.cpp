@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <iostream>
 
+#define CELL_SIZE 10
+
 using namespace std;
 
 Game::Game(int x, int y)
@@ -30,7 +32,6 @@ Game::~Game()
 
 void Game::UpdateGame()
 {
-	// Trzeba uwzglednic wyjscie poza granice mapy
 	Point head = snake[0];
 
 	if (!IsInBounds(head + dir) && !playerChangedDir)
@@ -67,9 +68,18 @@ void Game::UpdateGame()
 	playerChangedDir = false;
 }
 
-void Game::Render()
+void Game::Render(sf::RenderWindow& window)
 {
 	// SMFL
+	for (size_t i = 0; i < length; i++)
+	{
+		sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+		cell.setPosition(sf::Vector2f(snake[i].x * CELL_SIZE, snake[i].y * CELL_SIZE));
+		window.draw(cell);
+	}
+
+	sf::CircleShape apple(CELL_SIZE / 2.);
+	window.draw(apple);
 }
 
 Point Game::GetDir()
