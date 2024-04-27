@@ -1,10 +1,16 @@
 #include "game.h"
 #include <cstdlib>
+#include <iostream>
 
 using namespace std;
 
-Game::Game(size_t x, size_t y)
+Game::Game(int x, int y)
 {
+	if (x <= 0 || y <= 0)
+	{
+		cerr << "Game size must be greater than 0." << endl;
+		exit(1);
+	}
 	size.x = x;
 	size.y = y;
 
@@ -16,12 +22,28 @@ Game::Game(size_t x, size_t y)
 	GeneratePowerUp();
 }
 
+Game::~Game()
+{
+	if (snake)
+		delete[] snake;
+}
+
 void Game::UpdateGame()
 {
 	// Trzeba uwzglednic wyjscie poza granice mapy
 	Point head = snake[0];
-	head.x += dir.x;
-	head.y += dir.y;
+
+	if (!IsInBounds(head + dir) && !playerChangedDir)
+	{
+		ChangeAxis();
+		if (IsInSnake(head + dir))
+		{
+			dir.x *= -1;
+			dir.y *= -1;
+		}
+	}
+
+	head += dir;
 
 	if (powerUp == head)
 	{
@@ -41,6 +63,24 @@ void Game::UpdateGame()
 	{
 		// Koniec gry
 	}
+
+	playerChangedDir = false;
+}
+
+void Game::Render()
+{
+	// SMFL
+}
+
+Point Game::GetDir()
+{
+	return dir;
+}
+
+void Game::SetDir(Point dir)
+{
+	if ((abs(dir.x) + abs(dir.y)) == 1)
+		this->dir = dir;
 }
 
 void Game::GeneratePowerUp()
@@ -68,7 +108,37 @@ bool Game::IsInSnake(Point p)
 	return false;
 }
 
+bool Game::IsInBounds(Point p)
+{
+	return (p.x >= 0
+		&& p.x < size.x
+		&& p.y >= 0
+		&& p.y < size.y);
+}
+
+void Game::ChangeAxis()
+{
+	dir.x ^= dir.y;
+	dir.y ^= dir.x;
+	dir.x ^= dir.y;
+}
+
 bool operator==(const Point& A, const Point& B)
 {
 	return (A.x == B.x && A.y == B.y);
+}
+
+Point operator+(const Point& A, const Point& B)
+{
+	Point sum;
+	sum.x = A.x + B.x;
+	sum.y = A.y + B.y;
+	return sum;
+}
+
+Point& Point::operator+=(const Point& A)
+{
+	this->x += A.x;
+	this->y += A.y;
+	return *this;
 }

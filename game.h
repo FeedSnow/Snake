@@ -2,22 +2,26 @@
 
 struct Point
 {
-	size_t x;
-	size_t y;
+	int x;
+	int y;
+
+	Point& operator+=(const Point& A);
 };
 
 bool operator==(const Point& A, const Point& B);
+Point operator+(const Point& A, const Point& B);
 
 class Game
 {
 public:
-	Game(size_t x, size_t y);
+	Game(int x, int y);
+	~Game();
 
 	void UpdateGame();
 	void Render();
 
 	Point GetDir();
-	void SetDir();
+	void SetDir(Point dir);
 private:
 	// Array of snake cells
 	Point* snake;
@@ -28,7 +32,11 @@ private:
 
 	Point powerUp;
 
+	bool playerChangedDir;
+
 	void GeneratePowerUp();
 	bool BitItself();
 	bool IsInSnake(Point p);
+	bool IsInBounds(Point p);
+	void ChangeAxis();
 };
