@@ -80,9 +80,11 @@ void Game::Render(sf::RenderWindow& window)
 		window.draw(cell);
 	}
 
-	sf::CircleShape apple(CELL_SIZE / 2.);
+	float r = CELL_SIZE / 3.;
+	sf::CircleShape apple(r);
 	apple.setFillColor(sf::Color::Red);
-	apple.setPosition(sf::Vector2f(powerUp.x * CELL_SIZE + 2 * MARGIN, powerUp.y * CELL_SIZE + 2 * MARGIN));
+	apple.setOrigin(sf::Vector2f(r, r));
+	apple.setPosition(sf::Vector2f((powerUp.x + 0.5) * CELL_SIZE + 2 * MARGIN, (powerUp.y + 0.5) * CELL_SIZE + 2 * MARGIN));
 	window.draw(apple);
 }
 
@@ -93,7 +95,7 @@ sf::Vector2i Game::GetDir()
 
 void Game::SetDir(sf::Vector2i dir)
 {
-	if ((abs(dir.x) + abs(dir.y)) == 1)
+	if ((abs(dir.x) + abs(dir.y)) == 1 && this->dir != -dir)
 	{
 		this->dir = dir;
 		playerChangedDir = true;
