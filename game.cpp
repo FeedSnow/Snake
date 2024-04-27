@@ -29,14 +29,27 @@ Game::~Game()
 		delete[] snake;
 }
 
-void Game::UpdateGame()
+void Game::Start()
+{
+	sf::RenderWindow window(
+		sf::VideoMode(
+			size.x * CELL_SIZE + 4 * MARGIN,
+			size.y * CELL_SIZE + 4 * MARGIN
+		),
+		"Snake game"
+	);
+
+	MainGameLoop(window);
+}
+
+void Game::UpdateGame(sf::RenderWindow& window)
 {
 	sf::Vector2i head = snake[0];
 
 	if (!IsInBounds(head + dir) && !playerChangedDir)
 	{
 		ChangeAxis();
-		if (IsInSnake(head + dir))
+		if (IsInSnake(head + dir) || !IsInBounds(head + dir))
 		{
 			dir *= -1;
 		}
@@ -59,9 +72,9 @@ void Game::UpdateGame()
 	snake = temp;
 	temp = nullptr;
 
-	if (BitItself())
+	if (BitItself() || !IsInBounds(snake[0]))
 	{
-		// Koniec gry
+		GameOver(window);
 	}
 
 	playerChangedDir = false;
@@ -177,4 +190,58 @@ void Game::DrawFrame(sf::RenderWindow& window)
 
 	line.setPosition(sf::Vector2f(size.x * CELL_SIZE + 2 * MARGIN, 1.75 * MARGIN));
 	window.draw(line);
+}
+
+void Game::GameOver(sf::RenderWindow& window)
+{
+	while (window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+		}
+
+		window.clear(sf::Color::White);
+		window.display();
+	}
+}
+
+void Game::MainGameLoop(sf::RenderWindow& window)
+{
+	while (window.isOpen())
+	{
+		window.clear(sf::Color::White);
+		Render(window);
+		window.display();
+
+		sf::sleep(sf::seconds(0.7 / GetLength()));
+
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.scancode == sf::Keyboard::Scancode::Up
+					|| event.key.scancode == sf::Keyboard::Scancode::W)
+					SetDir(DIR_UP);
+				else if (event.key.scancode == sf::Keyboard::Scancode::Right
+					|| event.key.scancode == sf::Keyboard::Scancode::D)
+					SetDir(DIR_RIGHT);
+				else if (event.key.scancode == sf::Keyboard::Scancode::Down
+					|| event.key.scancode == sf::Keyboard::Scancode::S)
+					SetDir(DIR_DOWN);
+				else if (event.key.scancode == sf::Keyboard::Scancode::Left
+					|| event.key.scancode == sf::Keyboard::Scancode::A)
+					SetDir(DIR_LEFT);
+				else if (event.key.scancode == sf::Keyboard::Scancode::Escape)
+					GameOver(window);
+			}
+		}
+
+		UpdateGame(window);
+	}
 }

@@ -17,7 +17,9 @@ public:
 	Game(int x, int y);
 	~Game();
 
-	void UpdateGame();
+	void Start();
+
+	void UpdateGame(sf::RenderWindow& window);
 	void Render(sf::RenderWindow&);
 
 	sf::Vector2i GetDir();
@@ -35,11 +37,14 @@ private:
 	sf::Vector2i powerUp;
 
 	bool playerChangedDir;
+	bool stop;
 
 	void GeneratePowerUp();
 	bool BitItself();
 	bool IsInSnake(sf::Vector2i p);
 	bool IsInBounds(sf::Vector2i p);
 	void ChangeAxis();
-	void DrawFrame(sf::RenderWindow&);
+	void DrawFrame(sf::RenderWindow& window);
+	void GameOver(sf::RenderWindow& window);
+	void MainGameLoop(sf::RenderWindow& window);
 };
