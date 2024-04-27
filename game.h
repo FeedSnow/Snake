@@ -1,6 +1,11 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+#define DIR_UP		sf::Vector2i(0, -1)
+#define DIR_RIGHT	sf::Vector2i(1, 0)
+#define DIR_DOWN	sf::Vector2i(0, 1)
+#define DIR_LEFT	sf::Vector2i(-1, 0)
+
 class Game
 {
 public:

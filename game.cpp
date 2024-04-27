@@ -87,7 +87,10 @@ sf::Vector2i Game::GetDir()
 void Game::SetDir(sf::Vector2i dir)
 {
 	if ((abs(dir.x) + abs(dir.y)) == 1)
+	{
 		this->dir = dir;
+		playerChangedDir = true;
+	}
 }
 
 void Game::GeneratePowerUp()
