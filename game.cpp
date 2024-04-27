@@ -13,13 +13,11 @@ Game::Game(int x, int y)
 		cerr << "Game size must be greater than 0." << endl;
 		exit(1);
 	}
-	size.x = x;
-	size.y = y;
+	size = sf::Vector2i(x, y);
 
 	length = 1;
-	snake = new Point[length];
-	snake[0].x = x / 2;
-	snake[0].y = y / 2;
+	snake = new sf::Vector2i[length];
+	snake[0] = sf::Vector2i(x / 2, y / 2);
 
 	GeneratePowerUp();
 }
@@ -32,15 +30,14 @@ Game::~Game()
 
 void Game::UpdateGame()
 {
-	Point head = snake[0];
+	sf::Vector2i head = snake[0];
 
 	if (!IsInBounds(head + dir) && !playerChangedDir)
 	{
 		ChangeAxis();
 		if (IsInSnake(head + dir))
 		{
-			dir.x *= -1;
-			dir.y *= -1;
+			dir *= -1;
 		}
 	}
 
@@ -52,7 +49,7 @@ void Game::UpdateGame()
 		GeneratePowerUp();
 	}
 
-	Point* temp = new Point[length];
+	sf::Vector2i* temp = new sf::Vector2i[length];
 	temp[0] = head;
 	for (size_t i = 1; i < length; i++)
 		temp[i] = snake[i - 1];
@@ -82,12 +79,12 @@ void Game::Render(sf::RenderWindow& window)
 	window.draw(apple);
 }
 
-Point Game::GetDir()
+sf::Vector2i Game::GetDir()
 {
 	return dir;
 }
 
-void Game::SetDir(Point dir)
+void Game::SetDir(sf::Vector2i dir)
 {
 	if ((abs(dir.x) + abs(dir.y)) == 1)
 		this->dir = dir;
@@ -95,8 +92,7 @@ void Game::SetDir(Point dir)
 
 void Game::GeneratePowerUp()
 {
-	powerUp.x = rand() % size.x;
-	powerUp.y = rand() % size.y;
+	powerUp = sf::Vector2i(rand() % size.x, rand() % size.y);
 
 	if (IsInSnake(powerUp))
 		GeneratePowerUp();
@@ -110,7 +106,7 @@ bool Game::BitItself()
 	return false;
 }
 
-bool Game::IsInSnake(Point p)
+bool Game::IsInSnake(sf::Vector2i p)
 {
 	for (size_t i = 0; i < length; i++)
 		if (snake[i] == p)
@@ -118,7 +114,7 @@ bool Game::IsInSnake(Point p)
 	return false;
 }
 
-bool Game::IsInBounds(Point p)
+bool Game::IsInBounds(sf::Vector2i p)
 {
 	return (p.x >= 0
 		&& p.x < size.x
@@ -131,24 +127,4 @@ void Game::ChangeAxis()
 	dir.x ^= dir.y;
 	dir.y ^= dir.x;
 	dir.x ^= dir.y;
-}
-
-bool operator==(const Point& A, const Point& B)
-{
-	return (A.x == B.x && A.y == B.y);
-}
-
-Point operator+(const Point& A, const Point& B)
-{
-	Point sum;
-	sum.x = A.x + B.x;
-	sum.y = A.y + B.y;
-	return sum;
-}
-
-Point& Point::operator+=(const Point& A)
-{
-	this->x += A.x;
-	this->y += A.y;
-	return *this;
 }

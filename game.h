@@ -1,17 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-struct Point
-{
-	int x;
-	int y;
-
-	Point& operator+=(const Point& A);
-};
-
-bool operator==(const Point& A, const Point& B);
-Point operator+(const Point& A, const Point& B);
-
 class Game
 {
 public:
@@ -21,23 +10,23 @@ public:
 	void UpdateGame();
 	void Render(sf::RenderWindow&);
 
-	Point GetDir();
-	void SetDir(Point dir);
+	sf::Vector2i GetDir();
+	void SetDir(sf::Vector2i dir);
 private:
 	// Array of snake cells
-	Point* snake;
+	sf::Vector2i* snake;
 	size_t length;
-	Point dir;
+	sf::Vector2i dir;
 
-	Point size;
+	sf::Vector2i size;
 
-	Point powerUp;
+	sf::Vector2i powerUp;
 
 	bool playerChangedDir;
 
 	void GeneratePowerUp();
 	bool BitItself();
-	bool IsInSnake(Point p);
-	bool IsInBounds(Point p);
+	bool IsInSnake(sf::Vector2i p);
+	bool IsInBounds(sf::Vector2i p);
 	void ChangeAxis();
 };
