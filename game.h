@@ -19,9 +19,6 @@ public:
 
 	void Start();
 
-	void UpdateGame(sf::RenderWindow& window);
-	void Render(sf::RenderWindow&);
-
 	sf::Vector2i GetDir();
 	void SetDir(sf::Vector2i dir);
 
@@ -47,4 +44,7 @@ private:
 	void DrawFrame(sf::RenderWindow& window);
 	void GameOver(sf::RenderWindow& window);
 	void MainGameLoop(sf::RenderWindow& window);
+
+	void UpdateGame(sf::RenderWindow& window);
+	void Render(sf::RenderWindow&);
 };

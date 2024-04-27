@@ -203,6 +203,8 @@ void Game::GameOver(sf::RenderWindow& window)
 				window.close();
 		}
 
+
+
 		window.clear(sf::Color::White);
 		window.display();
 	}
