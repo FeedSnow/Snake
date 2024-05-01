@@ -4,18 +4,18 @@
 
 using namespace std;
 
-#ifndef __DIRECTIONS__
-#define __DIRECTIONS__
+#ifndef __SNAKE_CONSTANTS__
+#define __SNAKE_CONSTANTS__
 
 #define DIR_UP		sf::Vector2i(0, -1)
 #define DIR_RIGHT	sf::Vector2i(1, 0)
 #define DIR_DOWN	sf::Vector2i(0, 1)
 #define DIR_LEFT	sf::Vector2i(-1, 0)
 
-#endif // !__DIRECTIONS__
-
 #define CELL_SIZE 15
 #define MARGIN 10
+
+#endif // !__SNAKE_CONSTANTS__
 
 class Game
 {
