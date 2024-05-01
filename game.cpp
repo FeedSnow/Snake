@@ -115,7 +115,6 @@ void Game::UpdateGame(sf::RenderWindow& window)
 	}
 
 	head += dir;
-	cout << "Head: (" << head.x << ",  " << head.y << ")" << endl;
 
 	if (powerUp == head)
 	{
@@ -149,8 +148,6 @@ void Game::GeneratePowerUp()
 
 	if (IsInSnake(powerUp))
 		GeneratePowerUp();
-
-	cout << "Powerup: (" << powerUp.x << ", " << powerUp.y << ")" << endl;
 }
 
 
