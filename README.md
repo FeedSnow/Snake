@@ -36,8 +36,13 @@ On gameover screen You can see Your current score and high score.
      - `sfml-graphics-2.dll`
      - `sfml-system-2.dll`
      - `sfml-window-2.dll`
+5. Add `Lato-Regular.ttf` to Your application folder.
     
 ## How to use
 
 1. Create `Game` object of demanded size `x`, `y`.
 2. Call `Game::Start()` on Your `Game` object.
+
+## Font
+
+The font used in this project is **Lato** designed by Łukasz Dziedzic. It was downloaded from [Google Fonts](https://fonts.google.com/specimen/Lato) and it uses [Open Font License](https://openfontlicense.org). Learn more at [latofonts.com](https://www.latofonts.com).
