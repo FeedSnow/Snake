@@ -14,6 +14,9 @@ using namespace std;
 
 #endif // !__DIRECTIONS__
 
+#define CELL_SIZE 15
+#define MARGIN 10
+
 class Game
 {
 public:
@@ -22,14 +25,10 @@ public:
 
 	void Start();
 
-	sf::Vector2i GetDir();
-	void SetDir(sf::Vector2i dir);
-
-	size_t GetLength() { return length; }
 private:
-	// Array of snake cells
 	sf::Vector2i* snake;
 	size_t length;
+
 	sf::Vector2i dir;
 	sf::Vector2i lastDir;
 
@@ -37,18 +36,20 @@ private:
 
 	sf::Vector2i powerUp;
 
-	bool stop;
+	void Reset();
 
+	void MainGameLoop(sf::RenderWindow& window);
+	void UpdateGame(sf::RenderWindow& window);
 	void GeneratePowerUp();
+
+	void DrawFrame(sf::RenderWindow& window);
+	void Render(sf::RenderWindow&);
+	void GameOver(sf::RenderWindow& window);
+
+	void SetDir(sf::Vector2i dir);
+	void ChangeAxis();
+
 	bool BitItself();
 	bool IsInSnake(sf::Vector2i p);
 	bool IsInBounds(sf::Vector2i p);
-	void ChangeAxis();
-	void DrawFrame(sf::RenderWindow& window);
-	void GameOver(sf::RenderWindow& window);
-	void MainGameLoop(sf::RenderWindow& window);
-	void Reset();
-
-	void UpdateGame(sf::RenderWindow& window);
-	void Render(sf::RenderWindow&);
 };

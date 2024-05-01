@@ -1,14 +1,12 @@
 #include "game.h"
-#include <cstdlib>
-#include <iostream>
 #include <fstream>
 #include <sstream>
 
-#define CELL_SIZE 15
-#define MARGIN 10
-#define PI 3.14159265
-
-using namespace std;
+// ##############################
+// #                            #
+// #            INIT            #
+// #                            #
+// ##############################
 
 Game::Game(int x, int y)
 {
@@ -33,6 +31,25 @@ Game::~Game()
 		delete[] snake;
 }
 
+void Game::Reset()
+{
+	length = 1;
+	if (snake)
+		delete[] snake;
+	snake = new sf::Vector2i[length];
+	snake[0] = sf::Vector2i(size.x / 2, size.y / 2);
+
+	GeneratePowerUp();
+}
+
+
+
+// ##############################
+// #                            #
+// #            GAME            #
+// #                            #
+// ##############################
+
 void Game::Start()
 {
 	sf::RenderWindow window(
@@ -44,6 +61,44 @@ void Game::Start()
 	);
 
 	MainGameLoop(window);
+}
+
+void Game::MainGameLoop(sf::RenderWindow& window)
+{
+	while (window.isOpen())
+	{
+		window.clear(sf::Color::White);
+		Render(window);
+		window.display();
+
+		sf::sleep(sf::seconds(1. / (length + 2)));
+
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+				window.close();
+			if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.scancode == sf::Keyboard::Scancode::Up
+					|| event.key.scancode == sf::Keyboard::Scancode::W)
+					SetDir(DIR_UP);
+				else if (event.key.scancode == sf::Keyboard::Scancode::Right
+					|| event.key.scancode == sf::Keyboard::Scancode::D)
+					SetDir(DIR_RIGHT);
+				else if (event.key.scancode == sf::Keyboard::Scancode::Down
+					|| event.key.scancode == sf::Keyboard::Scancode::S)
+					SetDir(DIR_DOWN);
+				else if (event.key.scancode == sf::Keyboard::Scancode::Left
+					|| event.key.scancode == sf::Keyboard::Scancode::A)
+					SetDir(DIR_LEFT);
+				else if (event.key.scancode == sf::Keyboard::Scancode::Escape)
+					GameOver(window);
+			}
+		}
+
+		UpdateGame(window);
+	}
 }
 
 void Game::UpdateGame(sf::RenderWindow& window)
@@ -88,40 +143,6 @@ void Game::UpdateGame(sf::RenderWindow& window)
 	lastDir = dir;
 }
 
-void Game::Render(sf::RenderWindow& window)
-{
-	// SMFL
-	DrawFrame(window);
-
-	for (size_t i = 0; i < length; i++)
-	{
-		sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
-		cell.setFillColor(sf::Color::Black);
-		cell.setPosition(sf::Vector2f(snake[i].x * CELL_SIZE + 2 * MARGIN, snake[i].y * CELL_SIZE + 2 * MARGIN));
-		window.draw(cell);
-	}
-
-	float r = CELL_SIZE / 3.;
-	sf::CircleShape apple(r);
-	apple.setFillColor(sf::Color::Red);
-	apple.setOrigin(sf::Vector2f(r, r));
-	apple.setPosition(sf::Vector2f((powerUp.x + 0.5) * CELL_SIZE + 2 * MARGIN, (powerUp.y + 0.5) * CELL_SIZE + 2 * MARGIN));
-	window.draw(apple);
-}
-
-sf::Vector2i Game::GetDir()
-{
-	return dir;
-}
-
-void Game::SetDir(sf::Vector2i dir)
-{
-	if ((abs(dir.x) + abs(dir.y)) == 1 && lastDir != -dir)
-	{
-		this->dir = dir;
-	}
-}
-
 void Game::GeneratePowerUp()
 {
 	powerUp = sf::Vector2i(rand() % size.x, rand() % size.y);
@@ -132,36 +153,13 @@ void Game::GeneratePowerUp()
 	cout << "Powerup: (" << powerUp.x << ", " << powerUp.y << ")" << endl;
 }
 
-bool Game::BitItself()
-{
-	for (size_t i = 1; i < length; i++)
-		if (snake[0] == snake[i])
-			return true;
-	return false;
-}
 
-bool Game::IsInSnake(sf::Vector2i p)
-{
-	for (size_t i = 0; i < length; i++)
-		if (snake[i] == p)
-			return true;
-	return false;
-}
 
-bool Game::IsInBounds(sf::Vector2i p)
-{
-	return (p.x >= 0
-		&& p.x < size.x
-		&& p.y >= 0
-		&& p.y < size.y);
-}
-
-void Game::ChangeAxis()
-{
-	dir.x ^= dir.y;
-	dir.y ^= dir.x;
-	dir.x ^= dir.y;
-}
+// #########################
+// #                       #
+// #        DISPLAY        #
+// #                       #
+// #########################
 
 void Game::DrawFrame(sf::RenderWindow& window)
 {
@@ -197,6 +195,26 @@ void Game::DrawFrame(sf::RenderWindow& window)
 
 	line.setPosition(sf::Vector2f(size.x * CELL_SIZE + 2 * MARGIN, 1.75 * MARGIN));
 	window.draw(line);
+}
+
+void Game::Render(sf::RenderWindow& window)
+{
+	DrawFrame(window);
+
+	for (size_t i = 0; i < length; i++)
+	{
+		sf::RectangleShape cell(sf::Vector2f(CELL_SIZE, CELL_SIZE));
+		cell.setFillColor(sf::Color::Black);
+		cell.setPosition(sf::Vector2f(snake[i].x * CELL_SIZE + 2 * MARGIN, snake[i].y * CELL_SIZE + 2 * MARGIN));
+		window.draw(cell);
+	}
+
+	float r = CELL_SIZE / 3.;
+	sf::CircleShape apple(r);
+	apple.setFillColor(sf::Color::Red);
+	apple.setOrigin(sf::Vector2f(r, r));
+	apple.setPosition(sf::Vector2f((powerUp.x + 0.5) * CELL_SIZE + 2 * MARGIN, (powerUp.y + 0.5) * CELL_SIZE + 2 * MARGIN));
+	window.draw(apple);
 }
 
 void Game::GameOver(sf::RenderWindow& window)
@@ -279,9 +297,9 @@ void Game::GameOver(sf::RenderWindow& window)
 		playAgain.setFillColor(sf::Color(0, 0, 0, (cos(0.001 * i) + 1) * 128));
 
 		window.clear(sf::Color::White);
+		DrawFrame(window);
 		window.draw(gameover);
 		window.draw(score);
-		//window.draw(highScore);
 		window.draw(playAgain);
 		window.display();
 
@@ -289,51 +307,55 @@ void Game::GameOver(sf::RenderWindow& window)
 	}
 }
 
-void Game::MainGameLoop(sf::RenderWindow& window)
+
+
+// ###########################
+// #                         #
+// #        DIRECTION        #
+// #                         #
+// ###########################
+
+void Game::SetDir(sf::Vector2i dir)
 {
-	while (window.isOpen())
-	{
-		window.clear(sf::Color::White);
-		Render(window);
-		window.display();
-
-		sf::sleep(sf::seconds(1. / (GetLength()+2)));
-
-		sf::Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == sf::Event::Closed)
-				window.close();
-			if (event.type == sf::Event::KeyPressed)
-			{
-				if (event.key.scancode == sf::Keyboard::Scancode::Up
-					|| event.key.scancode == sf::Keyboard::Scancode::W)
-					SetDir(DIR_UP);
-				else if (event.key.scancode == sf::Keyboard::Scancode::Right
-					|| event.key.scancode == sf::Keyboard::Scancode::D)
-					SetDir(DIR_RIGHT);
-				else if (event.key.scancode == sf::Keyboard::Scancode::Down
-					|| event.key.scancode == sf::Keyboard::Scancode::S)
-					SetDir(DIR_DOWN);
-				else if (event.key.scancode == sf::Keyboard::Scancode::Left
-					|| event.key.scancode == sf::Keyboard::Scancode::A)
-					SetDir(DIR_LEFT);
-				else if (event.key.scancode == sf::Keyboard::Scancode::Escape)
-					GameOver(window);
-			}
-		}
-
-		UpdateGame(window);
-	}
+	if ((abs(dir.x) + abs(dir.y)) == 1 && lastDir != -dir)
+		this->dir = dir;
 }
 
-void Game::Reset()
+void Game::ChangeAxis()
 {
-	length = 1;
-	if (snake)
-		delete[] snake;
-	snake = new sf::Vector2i[length];
-	snake[0] = sf::Vector2i(size.x / 2, size.y / 2);
+	dir.x ^= dir.y;
+	dir.y ^= dir.x;
+	dir.x ^= dir.y;
+}
 
-	GeneratePowerUp();
+
+
+// ##########################
+// #                        #
+// #        BOOLEANS        #
+// #                        #
+// ##########################
+
+bool Game::BitItself()
+{
+	for (size_t i = 1; i < length; i++)
+		if (snake[0] == snake[i])
+			return true;
+	return false;
+}
+
+bool Game::IsInSnake(sf::Vector2i p)
+{
+	for (size_t i = 0; i < length; i++)
+		if (snake[i] == p)
+			return true;
+	return false;
+}
+
+bool Game::IsInBounds(sf::Vector2i p)
+{
+	return (p.x >= 0
+		&& p.x < size.x
+		&& p.y >= 0
+		&& p.y < size.y);
 }
