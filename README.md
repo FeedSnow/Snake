@@ -2,11 +2,13 @@
 
 Popular snake game made with C++ and SFML. You guide the titular snake on the board to eat apples. With every eaten apple Your snake gets longer. On the bounds of the board it automatically changes its direction. Game ends when the snake bites itself or fills whole board.
 
+On gameover screen You can see Your current score and high score.
+
 ## Keybinds
 
-\[W\], \[↑\] - go up
-\[A\], \[←\] - go left
-\[S\], \[↓\] - go down
+\[W\], \[↑\] - go up \
+\[A\], \[←\] - go left \
+\[S\], \[↓\] - go down \
 \[D\], \[→\] - go right
 
 ## How to run (Visual Studio)
