@@ -29,4 +29,4 @@
 ## How to use
 
 1. Create `Game` object of demanded size `x`, `y`.
-2. Call `Gane::Start()` on Your `Game` object.
+2. Call `Game::Start()` on Your `Game` object.
