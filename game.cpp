@@ -1,9 +1,12 @@
 #include "game.h"
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 #define CELL_SIZE 15
 #define MARGIN 10
+#define PI 3.14159265
 
 using namespace std;
 
@@ -15,6 +18,7 @@ Game::Game(int x, int y)
 		exit(1);
 	}
 	size = sf::Vector2i(x, y);
+	dir = lastDir = sf::Vector2i(0, 0);
 
 	length = 1;
 	snake = new sf::Vector2i[length];
@@ -46,7 +50,7 @@ void Game::UpdateGame(sf::RenderWindow& window)
 {
 	sf::Vector2i head = snake[0];
 
-	if (!IsInBounds(head + dir) && !playerChangedDir)
+	if (!IsInBounds(head + dir))
 	{
 		ChangeAxis();
 		if (IsInSnake(head + dir) || !IsInBounds(head + dir))
@@ -61,6 +65,10 @@ void Game::UpdateGame(sf::RenderWindow& window)
 	if (powerUp == head)
 	{
 		length++;
+
+		if (length == size.x * size.y)
+			GameOver(window);
+
 		GeneratePowerUp();
 	}
 
@@ -77,7 +85,7 @@ void Game::UpdateGame(sf::RenderWindow& window)
 		GameOver(window);
 	}
 
-	playerChangedDir = false;
+	lastDir = dir;
 }
 
 void Game::Render(sf::RenderWindow& window)
@@ -108,10 +116,9 @@ sf::Vector2i Game::GetDir()
 
 void Game::SetDir(sf::Vector2i dir)
 {
-	if ((abs(dir.x) + abs(dir.y)) == 1 && this->dir != -dir)
+	if ((abs(dir.x) + abs(dir.y)) == 1 && lastDir != -dir)
 	{
 		this->dir = dir;
-		playerChangedDir = true;
 	}
 }
 
@@ -194,6 +201,64 @@ void Game::DrawFrame(sf::RenderWindow& window)
 
 void Game::GameOver(sf::RenderWindow& window)
 {
+	unsigned int i = 0;
+
+	sf::Font font;
+	font.loadFromFile("Lato-Regular.ttf");
+
+	sf::Text gameover("GAME OVER", font);
+	gameover.setOrigin
+	(
+		sf::Vector2f
+		(
+			gameover.getGlobalBounds().width / 2.,
+			gameover.getGlobalBounds().height / 2.
+		)
+	);
+	gameover.setPosition(sf::Vector2f(window.getSize().x / 2., window.getSize().y / 2. - 60));
+	gameover.setFillColor(sf::Color::Black);
+
+	stringstream ss;
+
+	ss << "Score: " << length << endl;
+
+	size_t hiscore = 0;
+	ifstream hs("hiscore.txt");
+	if (hs)
+	{
+		hs >> hiscore;
+		hs.close();
+	}
+	if (length > hiscore)
+		hiscore = length;
+
+	ss << "High score: " << hiscore;
+
+	sf::Text score(ss.str(), font);
+	score.setCharacterSize(20);
+	score.setOrigin
+	(
+		sf::Vector2f
+		(
+			score.getGlobalBounds().width / 2.,
+			score.getGlobalBounds().height / 2.
+		)
+	);
+	score.setPosition(sf::Vector2f(window.getSize().x / 2., window.getSize().y / 2.));
+	score.setFillColor(sf::Color::Black);
+
+	sf::Text playAgain("Press any key to play again.", font);
+	playAgain.setCharacterSize(15);
+	playAgain.setOrigin
+	(
+		sf::Vector2f
+		(
+			playAgain.getGlobalBounds().width / 2.,
+			playAgain.getGlobalBounds().height / 2.
+		)
+	);
+	playAgain.setPosition(sf::Vector2f(window.getSize().x / 2., window.getSize().y / 2. + 60));
+
 	while (window.isOpen())
 	{
 		sf::Event event;
@@ -201,12 +266,26 @@ void Game::GameOver(sf::RenderWindow& window)
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
+			if (event.type == sf::Event::KeyPressed)
+			{
+				ofstream hs("hiscore.txt");
+				if (hs)
+					hs << hiscore;
+				Reset();
+				return;
+			}
 		}
 
-
+		playAgain.setFillColor(sf::Color(0, 0, 0, (cos(0.001 * i) + 1) * 128));
 
 		window.clear(sf::Color::White);
+		window.draw(gameover);
+		window.draw(score);
+		//window.draw(highScore);
+		window.draw(playAgain);
 		window.display();
+
+		i++;
 	}
 }
 
@@ -218,7 +297,7 @@ void Game::MainGameLoop(sf::RenderWindow& window)
 		Render(window);
 		window.display();
 
-		sf::sleep(sf::seconds(0.7 / GetLength()));
+		sf::sleep(sf::seconds(1. / (GetLength()+2)));
 
 		sf::Event event;
 		while (window.pollEvent(event))
@@ -246,4 +325,15 @@ void Game::MainGameLoop(sf::RenderWindow& window)
 
 		UpdateGame(window);
 	}
+}
+
+void Game::Reset()
+{
+	length = 1;
+	if (snake)
+		delete[] snake;
+	snake = new sf::Vector2i[length];
+	snake[0] = sf::Vector2i(size.x / 2, size.y / 2);
+
+	GeneratePowerUp();
 }

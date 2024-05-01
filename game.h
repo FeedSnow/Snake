@@ -1,5 +1,8 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <iostream>
+
+using namespace std;
 
 #ifndef __DIRECTIONS__
 #define __DIRECTIONS__
@@ -28,12 +31,12 @@ private:
 	sf::Vector2i* snake;
 	size_t length;
 	sf::Vector2i dir;
+	sf::Vector2i lastDir;
 
 	sf::Vector2i size;
 
 	sf::Vector2i powerUp;
 
-	bool playerChangedDir;
 	bool stop;
 
 	void GeneratePowerUp();
@@ -44,6 +47,7 @@ private:
 	void DrawFrame(sf::RenderWindow& window);
 	void GameOver(sf::RenderWindow& window);
 	void MainGameLoop(sf::RenderWindow& window);
+	void Reset();
 
 	void UpdateGame(sf::RenderWindow& window);
 	void Render(sf::RenderWindow&);
